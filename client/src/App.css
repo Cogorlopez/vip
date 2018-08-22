@@ -1,4 +1,4 @@
-.App {
+/* .App {
   text-align: center;
 }
 
@@ -25,4 +25,18 @@
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+} */
+
+.navbar-brand .img-fluid {
+  max-height: 65px;
+}
+
+.bg-dark {
+  background-color: #0e1271 !important;
+}
+
+.btn-info {
+  color: #fff;
+  background-color: #0e1271;
+  border-color: #0e1271;
 }

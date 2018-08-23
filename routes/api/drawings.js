@@ -3,6 +3,7 @@ const router = express.Router();
 
 // Load input validtation
 const validateAddDrawingInput = require("../../validation/addDrawing");
+const validateSearchDrawingInput = require("../../validation/searchDrawing");
 
 // Load Drawing model
 const Drawing = require("../../models/Drawing");
@@ -49,6 +50,12 @@ router.post("/add", (req, res) => {
 // @desc    Retrieve all drawings in DB
 // @access  Public
 router.get("/getall", (req, res) => {
+  // const { errors, isValid } = validateAddDrawingInput(req.body);
+
+  // if (!isValid) {
+  //   return res.status(400).json(errors);
+  // }
+
   Drawing.find({}, function(err, drawings) {
     var drawingMap = {};
     debugger;
@@ -68,6 +75,11 @@ router.get("/getall", (req, res) => {
 // @desc    Retrieve specified drawing
 // @access  Public
 router.post("/find", (req, res) => {
+  const { errors, isValid } = validateSearchDrawingInput(req.body);
+  debugger;
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
   const drwnum = req.body.drwnum;
   Drawing.findOne({ drwnum })
     .then(drawing => {

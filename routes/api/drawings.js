@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
+// Load input validtation
+const validateAddDrawingInput = require("../../validation/addDrawing");
+
 // Load Drawing model
 const Drawing = require("../../models/Drawing");
 
@@ -13,12 +16,18 @@ router.get("/test", (req, res) => res.json({ msg: "Drawings works" }));
 // @desc    Add drawing
 // @access  Public
 router.post("/add", (req, res) => {
+  const { errors, isValid } = validateAddDrawingInput(req.body);
+
+  // Check Validation
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
   Drawing.findOne({ drwnum: req.body.drwnum, revison: req.body.revision }).then(
     drawing => {
       if (drawing) {
-        return res
-          .status("400")
-          .json({ drwnum: "Drawing and revision already exists" });
+        errors.drwnum = "Drawing and revision already exists";
+        return res.status("400").json(errors);
       } else {
         const newDrawing = new Drawing({
           drwnum: req.body.drwnum,
@@ -44,7 +53,8 @@ router.get("/getall", (req, res) => {
     var drawingMap = {};
     debugger;
     if (drawings.length === 0) {
-      return res.status(404).json({ msg: "No drawings found" });
+      errors.msg = "No drawings found";
+      return res.status(404).json(errors);
     }
     drawings.forEach(drawing => {
       drawingMap[drawing._id] = drawing;
@@ -62,7 +72,8 @@ router.post("/find", (req, res) => {
   Drawing.findOne({ drwnum })
     .then(drawing => {
       if (!drawing) {
-        return res.status("404").json({ drawing: "Drawing not found" });
+        errors.drwnum = "Drawing not found";
+        return res.status("404").json(errors);
       }
 
       return res.status("200").json(drawing);

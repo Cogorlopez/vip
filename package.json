@@ -13,13 +13,16 @@
   "author": "Chris Ogor-Lopez",
   "license": "ISC",
   "dependencies": {
+    "activedirectory": "^0.7.2",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "concurrently": "^3.6.1",
+    "cors": "^2.8.4",
     "express": "^4.16.3",
     "gravatar": "^1.6.0",
     "jsonwebtoken": "^8.3.0",
     "mongoose": "^5.2.9",
+    "mssql": "^4.1.0",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "validator": "^10.6.0"

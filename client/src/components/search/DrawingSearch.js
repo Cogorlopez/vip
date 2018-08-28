@@ -1,19 +1,20 @@
 import React, { Component } from "react";
 import axios from "axios";
 import classnames from "classnames";
+import ResultsTable from "./ResultsTable";
+//import viewPdf from "../../functions/viewFile";
 
 export default class drawingsearch extends Component {
   constructor() {
     super();
     this.state = {
-      drwnum: "",
-      revision: "",
+      submitted: false,
+      drawings: [],
       errors: {}
     };
 
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
-    this.onReset = this.onReset.bind(this);
   }
 
   onSubmit(e) {
@@ -23,12 +24,16 @@ export default class drawingsearch extends Component {
       drwnum: this.state.drwnum
     };
 
+    this.setState({ loading: true, drawings: [], submitted: false });
     axios
-      .post("api/drawings/find", drawing)
-      .then(res => console.log(res.data))
+      .post("/api/drawings/finddrawing", drawing)
+      .then(res => {
+        this.setState({
+          drawings: [...this.state.drawings, ...res.data.recordset],
+          submitted: true
+        });
+      })
       .catch(err => this.setState({ errors: err.response.data }));
-
-    console.log(drawing);
   }
 
   onReset(e) {
@@ -36,6 +41,9 @@ export default class drawingsearch extends Component {
 
     this.setState({
       drwnum: "",
+      submitted: false,
+      imgSrc: {},
+      data: [],
       errors: {}
     });
   }
@@ -72,6 +80,9 @@ export default class drawingsearch extends Component {
                 />
                 <input className="btn btn-primary" type="reset" value="Reset" />
               </form>
+              {this.state.submitted ? (
+                <ResultsTable drawingslist={this.state.drawings} />
+              ) : null}
             </div>
           </div>
         </div>

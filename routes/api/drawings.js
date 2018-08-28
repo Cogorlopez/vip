@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const sql = require("mssql");
 
 // Load input validtation
 const validateAddDrawingInput = require("../../validation/addDrawing");
@@ -7,6 +8,18 @@ const validateSearchDrawingInput = require("../../validation/searchDrawing");
 
 // Load Drawing model
 const Drawing = require("../../models/Drawing");
+
+// DB Config
+const config = {
+  user: "vip",
+  password: "vip123",
+  server: "CS-SQL-VIP-US-DEV-001", // You can use 'localhost\\instance' to connect to named instance
+  database: "VIP",
+
+  options: {
+    encrypt: true // Use this if you're on Windows Azure
+  }
+};
 
 // @route   GET api/drawings/test
 // @desc    Tests drawings route
@@ -74,7 +87,7 @@ router.get("/getall", (req, res) => {
 // @route   POST api/drawings/find
 // @desc    Retrieve specified drawing
 // @access  Public
-router.post("/find", (req, res) => {
+router.get("/find", (req, res) => {
   const { errors, isValid } = validateSearchDrawingInput(req.body);
   debugger;
   if (!isValid) {
@@ -93,6 +106,50 @@ router.post("/find", (req, res) => {
     .catch(err => {
       console.log(err);
     });
+});
+
+// @route   POST api/documents/find
+// @desc    Finds specified document
+// @access  Public
+router.post("/finddrawing", (req, res) => {
+  const drawingNumber = req.body.drwnum;
+  debugger;
+
+  sql
+    .connect(config)
+    .then(pool => {
+      // Query
+
+      return pool
+        .request()
+        .input("input_parameter", sql.VarChar, drawingNumber)
+        .query(
+          "select Document.Id, Document.Name, Document.Revision, Document.title, Document.Models from Document where Document.Name = @input_parameter and Document.PublisherId = 1"
+        );
+      // .query(
+      //   "select [File].DocId, [File].Directory, Document.Name, Document.Revision, Document.title, Document.Models from [File] Inner join Document on [File].DocId = Document.Id where Document.Name = @input_parameter" select Document.Id, Document.Name, Document.Revision, Document.title, Document.Models from Document where Document.Name = '20q260'
+      // );
+    })
+    .then(result => {
+      if (result.rowsAffected[0] === 0) {
+        sql.close();
+        return res.status(404).json({ douments: "No documents found" });
+      } else {
+        //console.dir(result);
+        sql.close();
+        return res.status(200).json(result);
+      }
+    })
+    .catch(err => {
+      // ... error checks
+      console.log(err);
+    });
+
+  sql.on("error", err => {
+    // ... error handler
+    console.log(err);
+  });
+  //   sql.close();
 });
 
 module.exports = router;

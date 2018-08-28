@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 const passport = require("passport");
+const ActiveDirectory = require("activedirectory");
 
 // Load input validation
 const validateRegisterInput = require("../../validation/register");
@@ -108,6 +109,48 @@ router.post("/login", (req, res) => {
       });
     })
     .catch();
+});
+
+// @route   POST api/users/adlogin
+// @desc    Active Directory Authentication
+// @access  Public
+router.post("/adlogin", (req, res) => {
+  const { errors, isValid } = validateLoginInput(req.body);
+
+  // Check validation
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
+  const config = {
+    url: "ldap://jgi.joyglobalinc.com",
+    baseDN: "DC=JGI,DC=joyglobalinc,DC=com",
+    username: req.body.username,
+    password: req.body.password
+  };
+
+  const ad = new ActiveDirectory(config);
+
+  var username = req.body.username;
+  var password = req.body.password;
+  debugger;
+
+  ad.authenticate(username, password, (err, auth) => {
+    if (err) {
+      console.log("ERROR: " + JSON.stringify(err));
+      res.status(400).json({ err });
+      return;
+    }
+    debugger;
+
+    if (auth) {
+      console.log("Authenticated!");
+      res.status(200).json(auth);
+    } else {
+      console.log("Authentication failed!");
+      res.status(400).json({ msg: "Authentication Failed!" });
+    }
+  });
 });
 
 // @route   GET api/users/current

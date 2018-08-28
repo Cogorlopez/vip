@@ -1,0 +1,19 @@
+import React, { Component, Fragment } from "react";
+
+class ResultsTableItems extends Component {
+      this.props.datalist.map((item, i) => {
+return (
+  <Fragment>
+    
+    {
+      <tr key={i}>
+        <td>{item.DocId}</td>
+        <td>{item.Revision}</td>
+        <td>{item.title}</td>
+        <td>{item.Models}</td>
+      </tr>
+    }
+    </Fragment>
+}
+
+export default ResultsTableItems;

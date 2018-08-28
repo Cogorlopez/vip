@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const passport = require("passport");
@@ -28,6 +29,9 @@ app.use(passport.initialize());
 
 // // Passport config
 require("./config/passport.js")(passport);
+
+// Enable CORS
+app.use(cors());
 
 // // Use routes
 app.use("/api/users", users);

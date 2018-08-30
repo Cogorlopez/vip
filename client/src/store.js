@@ -6,14 +6,13 @@ const initialState = {};
 
 const middleWare = [thunk];
 
-const devTools =
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__();
+// Allows for app to still run if Redux DevTools is misssing from browser.
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(
   rootReducer,
   initialState,
-  compose(applyMiddleware(...middleWare)),
-  devTools
+  composeEnhancers(applyMiddleware(...middleWare))
 );
 
 export default store;

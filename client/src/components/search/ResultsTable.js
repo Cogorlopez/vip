@@ -48,7 +48,12 @@ function displayByteArray(byte) {
   const blob = new Blob([byte], { type: "application/pdf" });
   //const link = document.createElement("a");
   const fileURL = URL.createObjectURL(blob);
-  window.open(fileURL);
+  if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+    // for IE
+    window.navigator.msSaveOrOpenBlob(blob);
+  } else {
+    window.open(fileURL);
+  }
   //const fileName = drwnum;
   //link.download = fileName;
   //link.click();
